@@ -44,4 +44,8 @@ public class Role extends BaseEntity {
     public int getPriority() {
         return priority;
     }
+
+    public List<Rights> getRights() {
+        return rights;
+    }
 }

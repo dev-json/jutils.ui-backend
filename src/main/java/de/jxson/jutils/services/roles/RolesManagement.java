@@ -1,7 +1,9 @@
 package de.jxson.jutils.services.roles;
 
+import de.jxson.jutils.entity.right.Rights;
 import de.jxson.jutils.entity.role.Role;
 import de.jxson.jutils.entity.session.Session;
+import de.jxson.jutils.repository.right.RightsRepository;
 import de.jxson.jutils.repository.role.RoleRepository;
 import de.jxson.jutils.repository.session.SessionRepository;
 import de.jxson.jutils.utils.JUtilsResponse;
@@ -19,7 +21,10 @@ public class RolesManagement implements RolesManagementLocal {
     @Autowired
     RoleRepository roleRepository;
     @Autowired
-    private SessionRepository sessionRepository;
+    SessionRepository sessionRepository;
+
+    @Autowired
+    RightsRepository rightsRepository;
 
     @PostMapping("/add")
     @Override
@@ -93,15 +98,55 @@ public class RolesManagement implements RolesManagementLocal {
         return JUtilsResponse.ok(roleRepository.findAll());
     }
 
-    @PostMapping("/{roleId}/right")
+    @PostMapping("/{roleName}/right")
     @Override
-    public ResponseEntity<?> addRight(String right, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<?> addRight(@PathVariable String roleName, @RequestBody Rights right, HttpServletRequest request) {
+        if(request.getHeader("JToken") != null)
+        {
+            Session session = sessionRepository.findByToken(request.getHeader("JToken"));
+            if(session == null || !Token.validateToken(session, sessionRepository))
+                return JUtilsResponse.unauthorized("Invalid Token");
+        }
+
+        Role role = roleRepository.findByName(roleName);
+        if(role == null)
+            return JUtilsResponse.badRequest("Role not found");
+
+        Rights optionalRights = rightsRepository.findById((long) right.getId()).orElse(null);
+        if(optionalRights == null)
+            return JUtilsResponse.badRequest("Right not found");
+
+        if(role.getRights().stream().map(Rights::getId).toList().contains(optionalRights.getId()))
+            return JUtilsResponse.badRequest("Role already has the right");
+
+        role.getRights().add(optionalRights);
+        roleRepository.saveAndFlush(role);
+        return JUtilsResponse.ok(role);
     }
 
-    @DeleteMapping("/delete/{rightId}")
+    @DeleteMapping("/{roleName}/{rightId}")
     @Override
-    public ResponseEntity<?> deleteRight(String right, HttpServletRequest request) {
-        return null;
+    public ResponseEntity<?> deleteRight(@PathVariable String roleName, @PathVariable int rightId, HttpServletRequest request) {
+        if(request.getHeader("JToken") != null)
+        {
+            Session session = sessionRepository.findByToken(request.getHeader("JToken"));
+            if(session == null || !Token.validateToken(session, sessionRepository))
+                return JUtilsResponse.unauthorized("Invalid Token");
+        }
+
+        Role role = roleRepository.findByName(roleName);
+        if(role == null)
+            return JUtilsResponse.badRequest("Role not found");
+
+        Rights optionalRights = rightsRepository.findById((long) rightId).orElse(null);
+        if(optionalRights == null)
+            return JUtilsResponse.badRequest("Right not found");
+
+        if(!role.getRights().stream().map(Rights::getId).toList().contains(optionalRights.getId()))
+            return JUtilsResponse.badRequest("Role didn't has this right");
+
+        role.getRights().remove(optionalRights);
+        roleRepository.saveAndFlush(role);
+        return JUtilsResponse.ok(role);
     }
 }

@@ -7,10 +7,32 @@ import jakarta.persistence.*;
 public class Rights extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String rightName;
     private String rightDescription;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getRightName() {
+        return rightName;
+    }
+
+    public void setRightName(String rightName) {
+        this.rightName = rightName;
+    }
+
+    public String getRightDescription() {
+        return rightDescription;
+    }
+
+    public void setRightDescription(String rightDescription) {
+        this.rightDescription = rightDescription;
+    }
 }
