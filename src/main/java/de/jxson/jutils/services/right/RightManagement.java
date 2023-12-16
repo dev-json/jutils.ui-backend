@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/rights")
+@CrossOrigin
 public class RightManagement implements RightManagementLocal {
 
     @Autowired
