@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/rights")
-@CrossOrigin
+@CrossOrigin(origins = "*", exposedHeaders = "JToken")
 public class RightManagement implements RightManagementLocal {
 
     @Autowired

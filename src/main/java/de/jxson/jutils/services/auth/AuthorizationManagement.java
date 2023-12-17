@@ -1,15 +1,12 @@
 package de.jxson.jutils.services.auth;
 
-import de.jxson.jutils.JutilsApplication;
 import de.jxson.jutils.entity.session.Session;
 import de.jxson.jutils.entity.user.User;
 import de.jxson.jutils.repository.session.SessionRepository;
 import de.jxson.jutils.repository.user.UserRepository;
 import de.jxson.jutils.utils.JUtilsResponse;
 import de.jxson.jutils.utils.token.Token;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,13 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin
+@CrossOrigin(origins = "*", exposedHeaders = "JToken")
 public class AuthorizationManagement implements AuthorizationManagementLocal {
 
     @Autowired

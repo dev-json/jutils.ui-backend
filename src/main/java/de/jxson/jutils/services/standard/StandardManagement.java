@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/standard")
-@CrossOrigin
+@CrossOrigin(origins = "*", exposedHeaders = "JToken")
 public class StandardManagement implements StandardManagementLocal {
 
     @GetMapping("/currentTimestamp")
